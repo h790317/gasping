@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>瀕死呼吸：互動式網頁簡報</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .slide.active {
+            display: flex;
+            opacity: 1;
+            z-index: 10;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 300px;
+            margin-top: 1rem;
+        }
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 20;
+            background-color: rgba(0, 0, 0, 0.3);
+            color: white;
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .nav-button:hover {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        #prevBtn { left: 1rem; }
+        #nextBtn { right: 1rem; }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div id="slideshow-container" class="w-full max-w-4xl aspect-video bg-white rounded-xl shadow-2xl relative overflow-hidden">
+        
+        <!-- Slide 1: Title -->
+        <div id="slide-1" class="slide active">
+            <h1 class="text-4xl md:text-6xl font-black text-slate-800">瀕死呼吸</h1>
+            <h2 class="text-2xl md:text-3xl font-bold text-orange-600 mt-2">希望的喘息</h2>
+            <p class="text-lg text-slate-500 mt-6">一份關於辨識與緊急應對的救命指南</p>
+        </div>
+
+        <!-- Slide 2: Hook -->
+        <div id="slide-2" class="slide">
+            <h2 class="text-2xl md:text-4xl font-bold text-slate-800">一個動作，存活率提升4倍</h2>
+            <p class="text-slate-600 mt-4 text-lg">當患者出現瀕死呼吸時，旁觀者施予CPR...</p>
+            <p class="text-6xl md:text-8xl font-black text-orange-600 my-4">9% → 39%</p>
+            <p class="text-xl font-bold text-slate-700">您的行動，是生與死的關鍵。</p>
+        </div>
+        
+        <!-- Slide 3: Definition -->
+        <div id="slide-3" class="slide">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800">這不是呼吸，是求救信號</h2>
+            <ul class="mt-6 text-xl text-left space-y-3 max-w-lg">
+                <li><span class="font-bold text-orange-600">本質：</span>心搏停止的直接信號。</li>
+                <li><span class="font-bold text-orange-600">機制：</span>大腦最原始的求生本能。</li>
+                <li><span class="font-bold text-orange-600">認知：</span>無法為身體提供足夠氧氣。</li>
+            </ul>
+            <div class="mt-8 bg-red-100 border-2 border-red-500 text-red-700 font-bold text-2xl px-6 py-3 rounded-lg">
+                瀕死呼吸 ≠ 還有呼吸
+            </div>
+        </div>
+
+        <!-- Slide 4: Principle (NEW) -->
+        <div id="slide-4" class="slide">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800">瀕死呼吸的原理</h2>
+            <ol class="mt-6 text-xl text-left space-y-4 max-w-2xl">
+                <li>1. 當心臟停止，大腦會陷入嚴重缺氧。</li>
+                <li>2. 負責思考的高級功能迅速失效 (→ 失去意識)。</li>
+                <li>3. 但控制維生的<span class="font-bold text-orange-600">腦幹</span>，會做最後的本能掙扎，試圖吸氣。</li>
+            </ol>
+             <p class="mt-6 text-xl font-bold text-slate-700">這就是瀕死呼吸——大腦的最後求救。</p>
+        </div>
+
+        <!-- Slide 5: Anatomy (NEW) -->
+        <div id="slide-5" class="slide">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800">生命中樞：腦幹</h2>
+            <div class="w-full max-w-sm mt-4">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Brain_stem_highlighted.png/1024px-Brain_stem_highlighted.png" alt="" class="w-full h-auto object-contain" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e2e8f0/2d3748?text=腦部解剖圖';">
+            </div>
+            <p class="mt-4 text-lg text-slate-600 max-w-lg">腦幹位於大腦底部，連接脊髓，是我們最原始的生命中樞，控制心跳與呼吸。</p>
+        </div>
+
+        <!-- Slide 6: Recognition -->
+        <div id="slide-6" class="slide">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800">如何辨識？</h2>
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-3xl">
+                <div class="bg-slate-50 p-6 rounded-lg">
+                    <h3 class="text-2xl font-bold mb-4">聽起來像...</h3>
+                    <ul class="text-lg space-y-3 text-left">
+                        <li>😮 **喘息 (Gasping)**</li>
+                        <li>😴 **打鼾/哼聲 (Snorting)**</li>
+                        <li>🤤 **咕嚕聲 (Gurgling)**</li>
+                    </ul>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-lg">
+                    <h3 class="text-2xl font-bold mb-4">看起來像...</h3>
+                    <ul class="text-lg space-y-3 text-left">
+                        <li>🕒 **緩慢且不規律**</li>
+                        <li>📉 **淺短無力**</li>
+                        <li>😵 **失去意識**</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Fatal Mistake -->
+        <div id="slide-7" class="slide">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800">最大的救援障礙：致命的誤解</h2>
+            <p class="mt-6 text-xl max-w-2xl">旁觀者最常犯的錯誤，就是將這種掙扎的喘息，誤認為「病人還有呼吸」，因而猶豫、延誤了救命的CPR。</p>
+            <div class="mt-8 bg-yellow-100 border-2 border-yellow-500 text-yellow-800 font-bold text-xl px-6 py-4 rounded-lg max-w-2xl">
+                黃金準則：對於失去意識的人，任何不正常的呼吸，都應視為沒有正常呼吸！
+            </div>
+        </div>
+
+        <!-- Slide 8: The Paradox -->
+        <div id="slide-8" class="slide">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800">希望的悖論</h2>
+            <p class="mt-4 text-lg max-w-2xl">瀕死呼吸雖是死亡前兆，卻也代表患者正處於最有機會被救活的「黃金時間窗」。</p>
+            <div class="chart-container">
+                <canvas id="survivalChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Slide 9: The Steps -->
+        <div id="slide-9" class="slide">
+             <h2 class="text-3xl md:text-4xl font-bold text-slate-800">您該怎麼做？記住救命四步驟</h2>
+             <div class="flex items-center justify-center mt-8 space-x-2 md:space-x-4">
+                <div class="bg-blue-500 text-white p-4 md:p-8 rounded-lg"><span class="text-4xl md:text-7xl font-black">叫</span></div>
+                <div class="text-4xl md:text-6xl font-thin text-slate-300">→</div>
+                <div class="bg-blue-500 text-white p-4 md:p-8 rounded-lg"><span class="text-4xl md:text-7xl font-black">叫</span></div>
+                <div class="text-4xl md:text-6xl font-thin text-slate-300">→</div>
+                <div class="bg-orange-500 text-white p-4 md:p-8 rounded-lg"><span class="text-4xl md:text-7xl font-black">壓</span></div>
+                <div class="text-4xl md:text-6xl font-thin text-slate-300">→</div>
+                <div class="bg-yellow-400 text-white p-4 md:p-8 rounded-lg"><span class="text-4xl md:text-7xl font-black">電</span></div>
+             </div>
+        </div>
+
+        <!-- Slide 10: Steps 1 & 2 -->
+        <div id="slide-10" class="slide">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800">步驟 1 & 2：叫 (確認) & 叫 (求救)</h2>
+            <div class="mt-6 text-xl text-left max-w-lg space-y-4">
+                <p><strong>1. 確認反應：</strong>輕拍雙肩，大聲呼叫，檢查有無正常呼吸 (<10秒)。</p>
+                <p><strong>2. 大聲求救：</strong><span class="font-bold">指定</span>旁人打119、拿AED。</p>
+            </div>
+        </div>
+
+        <!-- Slide 11: Step 3 -->
+        <div id="slide-11" class="slide">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800">步驟 3：壓 (高品質CPR)</h2>
+            <ul class="mt-6 text-xl text-left space-y-3 max-w-md">
+                <li><strong>位置：</strong>兩乳頭連線中央</li>
+                <li><strong>速率：</strong>100-120 次/分鐘</li>
+                <li><strong>深度：</strong>5-6 公分</li>
+                <li><strong>要訣：</strong>用力壓、快快壓、胸回彈、莫中斷</li>
+            </ul>
+        </div>
+        
+        <!-- Slide 12: Step 4 -->
+        <div id="slide-12" class="slide">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800">步驟 4：電 (使用AED)</h2>
+            <p class="mt-6 text-xl">AED是唯一能有效處理特定心搏停止的方法。</p>
+            <p class="mt-4 font-bold text-2xl bg-yellow-100 px-6 py-3 rounded-lg">口訣：開、貼、插、電</p>
+            <p class="mt-4 text-xl text-red-600 font-bold">關鍵：電擊後，立即恢復胸部按壓！</p>
+        </div>
+
+        <!-- Slide 13: Data -->
+        <div id="slide-13" class="slide">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800">數據告訴我們的事</h2>
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl px-4">
+                <div>
+                    <h3 class="text-xl font-bold">普遍性</h3>
+                    <div class="chart-container h-64">
+                        <canvas id="occurrenceChart"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold">可救性</h3>
+                     <div class="chart-container h-64">
+                        <canvas id="rhythmChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Summary -->
+        <div id="slide-14" class="slide">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800">總結：您的行動，就是希望</h2>
+            <ul class="mt-6 text-xl text-left space-y-3 max-w-2xl">
+                <li>1. 瀕死呼吸 = 心搏停止 = <span class="font-bold text-red-600">立即行動</span></li>
+                <li>2. 它是<span class="font-bold text-orange-600">希望的喘息</span>，不是死亡的定論。</li>
+                <li>3. 牢記口訣：<span class="font-bold">叫、叫、壓、電</span>。</li>
+            </ul>
+        </div>
+        
+        <!-- Slide 15: Q&A -->
+        <div id="slide-15" class="slide">
+            <h2 class="text-5xl md:text-7xl font-black text-slate-800">Q&A</h2>
+            <p class="mt-4 text-2xl text-slate-600">謝謝聆聽</p>
+            <button id="restartBtn" class="mt-8 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-full transition-colors">重新播放</button>
+        </div>
+
+        <!-- Navigation -->
+        <button id="prevBtn" class="nav-button">&lt;</button>
+        <button id="nextBtn" class="nav-button">&gt;</button>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="w-full max-w-4xl mt-4 bg-gray-200 rounded-full h-2.5">
+        <div id="progressBar" class="bg-orange-600 h-2.5 rounded-full" style="width: 0%"></div>
+    </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const progressBar = document.getElementById('progressBar');
+    let currentSlide = 0;
+    let charts = {};
+
+    function showSlide(index) {
+        slides.forEach((slide, i) => {
+            slide.classList.toggle('active', i === index);
+        });
+        currentSlide = index;
+        updateNav();
+        updateProgressBar();
+        renderChartForSlide(index + 1);
+    }
+
+    function updateNav() {
+        prevBtn.style.display = currentSlide === 0 ? 'none' : 'flex';
+        nextBtn.style.display = currentSlide === slides.length - 1 ? 'none' : 'flex';
+    }
+    
+    function updateProgressBar() {
+        const progress = ((currentSlide + 1) / slides.length) * 100;
+        progressBar.style.width = `${progress}%`;
+    }
+
+    nextBtn.addEventListener('click', () => {
+        if (currentSlide < slides.length - 1) {
+            showSlide(currentSlide + 1);
+        }
+    });
+
+    prevBtn.addEventListener('click', () => {
+        if (currentSlide > 0) {
+            showSlide(currentSlide - 1);
+        }
+    });
+    
+    restartBtn.addEventListener('click', () => {
+        showSlide(0);
+    });
+
+    showSlide(0);
+
+    // --- Chart Rendering ---
+    function renderChartForSlide(slideNumber) {
+        const chartId = `chart-for-slide-${slideNumber}`;
+        if (charts[chartId]) return; // Don't re-render
+
+        switch (slideNumber) {
+            case 8: // Survival Chart
+                const survivalCtx = document.getElementById('survivalChart')?.getContext('2d');
+                if (survivalCtx) {
+                    charts[chartId] = new Chart(survivalCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['無瀕死呼吸', '有瀕死呼吸', '有瀕死呼吸 + 旁觀者CPR'],
+                            datasets: [{
+                                label: '存活率 (%)',
+                                data: [9, 27, 39],
+                                backgroundColor: ['#64748b', '#fb923c', '#22c55e'],
+                                borderRadius: 5,
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: (v) => v + '%' } } } }
+                    });
+                }
+                break;
+            case 13: // Data Charts
+                const occurrenceCtx = document.getElementById('occurrenceChart')?.getContext('2d');
+                if (occurrenceCtx && !charts['chart-for-slide-13-a']) {
+                     charts['chart-for-slide-13-a'] = new Chart(occurrenceCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['出現瀕死呼吸', '未出現'],
+                            datasets: [{ data: [40, 60], backgroundColor: ['#f97316', '#e2e8f0'], borderWidth: 4, borderColor: '#fff' }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                    });
+                }
+                const rhythmCtx = document.getElementById('rhythmChart')?.getContext('2d');
+                if (rhythmCtx && !charts['chart-for-slide-13-b']) {
+                    charts['chart-for-slide-13-b'] = new Chart(rhythmCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['可電擊心律(VF)', '不可電擊心律'],
+                            datasets: [{ label: '出現比例 (%)', data: [56, 34], backgroundColor: ['#facc15', '#60a5fa'], borderRadius: 5 }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { ticks: { callback: (v) => v + '%' } } } }
+                    });
+                }
+                break;
+        }
+    }
+});
+</script>
+
+</body>
+</html>
+
